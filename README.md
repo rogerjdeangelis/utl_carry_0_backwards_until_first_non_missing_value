@@ -65,6 +65,33 @@ Carry 0 backwards until first non missing value. Keywords: sas sql join merge bi
         output;
       end;
     run;quit;
+    
+     * Other solution;
+     data want;
+        retain retFlg been_there .;
+        set have;
+        by pt;
+        if flag=. and been_there=. then do;
+           retFLg=0;
+           been_there=1;
+        end;
+        else if flag ne . then retFlg=flag;
+        output;
+        if last.pt then been_there=.;
+    run;quit;
+
+
+    Arthur Tabachneck via listserv.uga.edu
+
+    data want (drop=_:);
+      set have (rename=(flag=_flag));
+      by pt;
+      retain flag;
+      if first.pt and missing(flag) then flag=0;
+      else if _flag eq 1 then flag=1;
+    run;
+
+
 
     OUTPUT
     =====
